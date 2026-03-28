@@ -191,4 +191,5 @@ async def relatorio(ctx):
 # =========================
 # INICIAR BOT
 # =========================
-bot.run("")
+import os
+bot.run(os.getenv("TOKEN"))
