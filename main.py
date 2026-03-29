@@ -10,7 +10,7 @@ intents.message_content = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 ARQUIVO = "farm.json"
-CANAL_LIDERES_ID = 1486499265562935498  # seu canal
+CANAL_LIDERES_ID = 1486499265562935498
 
 # =========================
 # BANCO JSON
@@ -31,7 +31,7 @@ def salvar(dados):
 
 
 # =========================
-# BOT LIGOU
+# BOT ONLINE
 # =========================
 @bot.event
 async def on_ready():
@@ -39,61 +39,12 @@ async def on_ready():
 
 
 # =========================
-# FARM MULTIPLO (CORRETO)
+# FARM (ÚNICO E CORRETO)
 # =========================
 @bot.command()
 async def farm(ctx, *args):
-    dados = carregar()
-    uid = str(ctx.author.id)
 
-    if uid not in dados:
-        dados[uid] = {
-            "nome": ctx.author.name,
-            "aço": 0,
-            "chip": 0,
-            "tecido": 0
-        }
-
-    itens_validos = ["aço", "chip", "tecido"]
-    registro = {"aço": 0, "chip": 0, "tecido": 0}
-
-    try:
-        for i in range(0, len(args), 2):
-            item = args[i].lower()
-            quantidade = int(args[i + 1])
-
-            if item not in itens_validos:
-                await ctx.send(f"❌ Item inválido: {item}")
-                return
-
-            registro[item] += quantidade
-            dados[uid][item] += quantidade
-
-    except:
-        await ctx.send("❌ Use: !farm aço 2 chip 2 tecido 2")
-        return
-
-    salvar(dados)
-
-    embed = discord.Embed(
-        title="📦 Farm registrado",
-        color=discord.Color.green()
-    )
-
-    for item, qtd in registro.items():
-        if qtd > 0:
-            embed.add_field(name=item.capitalize(), value=qtd)
-
-    await ctx.send(embed=embed)
-
-
-# =========================
-# MEU FARM
-# =========================
-
-@bot.command()
-async def farm(ctx, *args):
-    # 🧹 apagar mensagem (sem crash)
+    # apagar comando do usuário
     if ctx.guild:
         perms = ctx.channel.permissions_for(ctx.guild.me)
         if perms.manage_messages:
@@ -116,6 +67,7 @@ async def farm(ctx, *args):
     itens_validos = ["aço", "chip", "tecido"]
     registro = {"aço": 0, "chip": 0, "tecido": 0}
 
+    # validação
     if len(args) % 2 != 0:
         await ctx.send("❌ Use: !farm aço 2 chip 2 tecido 2", delete_after=10)
         return
@@ -148,6 +100,7 @@ async def farm(ctx, *args):
             embed.add_field(name=item.capitalize(), value=qtd)
 
     await ctx.send(embed=embed, delete_after=20)
+
 
 # =========================
 # RANKING
@@ -223,9 +176,12 @@ async def relatorio(ctx):
     await canal.send(embed=embed)
     await ctx.send("✅ Relatório enviado!")
 
+
+# =========================
+# RESET GERAL
+# =========================
 @bot.command()
 async def resetar(ctx):
-    # 🔒 Permissão (opcional - recomendo)
     if not any(role.name == "Líder" for role in ctx.author.roles):
         await ctx.send("❌ Apenas líderes podem usar este comando.")
         return
@@ -239,17 +195,14 @@ async def resetar(ctx):
 
     salvar(dados)
 
-    embed = discord.Embed(
-        title="🧹 Reset realizado",
-        description="Todos os farms foram zerados!",
-        color=discord.Color.red()
-    )
+    await ctx.send("🧹 Todos os farms foram zerados!")
 
-    await ctx.send(embed=embed)
 
+# =========================
+# RESET INDIVIDUAL
+# =========================
 @bot.command()
 async def resetaruser(ctx, membro: discord.Member):
-    # 🔒 Apenas líderes (opcional)
     if not any(role.name == "Líder" for role in ctx.author.roles):
         await ctx.send("❌ Apenas líderes podem usar este comando.")
         return
@@ -261,23 +214,16 @@ async def resetaruser(ctx, membro: discord.Member):
         await ctx.send("❌ Esse usuário não tem farm registrado.")
         return
 
-    # Zera os valores
     dados[uid]["aço"] = 0
     dados[uid]["chip"] = 0
     dados[uid]["tecido"] = 0
 
     salvar(dados)
 
-    embed = discord.Embed(
-        title="🧹 Reset individual",
-        description=f"O farm de {membro.mention} foi zerado!",
-        color=discord.Color.orange()
-    )
+    await ctx.send(f"🧹 Farm de {membro.mention} zerado!")
 
-    await ctx.send(embed=embed)
-    
+
 # =========================
 # INICIAR BOT
 # =========================
-import os
 bot.run(os.getenv("TOKEN"))
