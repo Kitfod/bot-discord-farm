@@ -187,7 +187,30 @@ async def relatorio(ctx):
     await canal.send(embed=embed)
     await ctx.send("✅ Relatório enviado!")
 
+@bot.command()
+async def resetar(ctx):
+    # 🔒 Permissão (opcional - recomendo)
+    if not any(role.name == "Líder" for role in ctx.author.roles):
+        await ctx.send("❌ Apenas líderes podem usar este comando.")
+        return
 
+    dados = carregar()
+
+    for uid in dados:
+        dados[uid]["aço"] = 0
+        dados[uid]["chip"] = 0
+        dados[uid]["tecido"] = 0
+
+    salvar(dados)
+
+    embed = discord.Embed(
+        title="🧹 Reset realizado",
+        description="Todos os farms foram zerados!",
+        color=discord.Color.red()
+    )
+
+    await ctx.send(embed=embed)
+    
 # =========================
 # INICIAR BOT
 # =========================
