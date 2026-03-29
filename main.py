@@ -39,12 +39,12 @@ async def on_ready():
 
 
 # =========================
-# FARM (ÚNICO E CORRETO)
+# FARM
 # =========================
 @bot.command()
 async def farm(ctx, *args):
 
-    # apagar comando do usuário
+    # apagar comando
     if ctx.guild:
         perms = ctx.channel.permissions_for(ctx.guild.me)
         if perms.manage_messages:
@@ -67,7 +67,6 @@ async def farm(ctx, *args):
     itens_validos = ["aço", "chip", "tecido"]
     registro = {"aço": 0, "chip": 0, "tecido": 0}
 
-    # validação
     if len(args) % 2 != 0:
         await ctx.send("❌ Use: !farm aço 2 chip 2 tecido 2", delete_after=10)
         return
@@ -107,15 +106,24 @@ async def farm(ctx, *args):
 # =========================
 @bot.command()
 async def ranking(ctx, item: str = None):
-    dados = carregar()
 
+    # apagar comando
+    if ctx.guild:
+        perms = ctx.channel.permissions_for(ctx.guild.me)
+        if perms.manage_messages:
+            try:
+                await ctx.message.delete()
+            except:
+                pass
+
+    dados = carregar()
     ranking = []
 
     for user in dados.values():
         if item:
             item = item.lower()
             if item not in ["aço", "chip", "tecido"]:
-                await ctx.send("Use aço, chip ou tecido")
+                await ctx.send("❌ Use aço, chip ou tecido", delete_after=10)
                 return
             total = user[item]
             ranking.append((user["nome"], total))
@@ -145,7 +153,7 @@ async def ranking(ctx, item: str = None):
                 inline=False
             )
 
-    await ctx.send(embed=embed)
+    await ctx.send(embed=embed, delete_after=20)
 
 
 # =========================
@@ -157,7 +165,7 @@ async def relatorio(ctx):
     canal = bot.get_channel(CANAL_LIDERES_ID)
 
     if canal is None:
-        await ctx.send("❌ Canal não encontrado.")
+        await ctx.send("❌ Canal não encontrado.", delete_after=10)
         return
 
     embed = discord.Embed(
@@ -174,7 +182,7 @@ async def relatorio(ctx):
         )
 
     await canal.send(embed=embed)
-    await ctx.send("✅ Relatório enviado!")
+    await ctx.send("✅ Relatório enviado!", delete_after=10)
 
 
 # =========================
@@ -183,7 +191,7 @@ async def relatorio(ctx):
 @bot.command()
 async def resetar(ctx):
     if not any(role.name == "Líder" for role in ctx.author.roles):
-        await ctx.send("❌ Apenas líderes podem usar este comando.")
+        await ctx.send("❌ Apenas líderes podem usar.", delete_after=10)
         return
 
     dados = carregar()
@@ -195,7 +203,7 @@ async def resetar(ctx):
 
     salvar(dados)
 
-    await ctx.send("🧹 Todos os farms foram zerados!")
+    await ctx.send("🧹 Todos os farms foram zerados!", delete_after=10)
 
 
 # =========================
@@ -204,14 +212,14 @@ async def resetar(ctx):
 @bot.command()
 async def resetaruser(ctx, membro: discord.Member):
     if not any(role.name == "Líder" for role in ctx.author.roles):
-        await ctx.send("❌ Apenas líderes podem usar este comando.")
+        await ctx.send("❌ Apenas líderes podem usar.", delete_after=10)
         return
 
     dados = carregar()
     uid = str(membro.id)
 
     if uid not in dados:
-        await ctx.send("❌ Esse usuário não tem farm registrado.")
+        await ctx.send("❌ Usuário sem registro.", delete_after=10)
         return
 
     dados[uid]["aço"] = 0
@@ -220,7 +228,7 @@ async def resetaruser(ctx, membro: discord.Member):
 
     salvar(dados)
 
-    await ctx.send(f"🧹 Farm de {membro.mention} zerado!")
+    await ctx.send(f"🧹 Farm de {membro.mention} zerado!", delete_after=10)
 
 
 # =========================
