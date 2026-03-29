@@ -92,57 +92,26 @@ async def farm(ctx, *args):
 # =========================
 
 @bot.command()
-async def farm(ctx, *args):
-    # 🧹 Apaga comando do usuário
-    try:
-        await ctx.message.delete()
-    except:
-        pass
-
+async def meufarm(ctx):
     dados = carregar()
     uid = str(ctx.author.id)
 
     if uid not in dados:
-        dados[uid] = {
-            "nome": ctx.author.name,
-            "aço": 0,
-            "chip": 0,
-            "tecido": 0
-        }
-
-    itens_validos = ["aço", "chip", "tecido"]
-    registro = {"aço": 0, "chip": 0, "tecido": 0}
-
-    try:
-        for i in range(0, len(args), 2):
-            item = args[i].lower()
-            quantidade = int(args[i + 1])
-
-            if item not in itens_validos:
-                msg = await ctx.send("❌ Item inválido.", delete_after=10)
-                return
-
-            registro[item] += quantidade
-            dados[uid][item] += quantidade
-
-    except:
-        await ctx.send("❌ Use: !farm aço 2 chip 2 tecido 2", delete_after=10)
+        await ctx.send("Você ainda não registrou nada.")
         return
 
-    salvar(dados)
+    user = dados[uid]
 
     embed = discord.Embed(
-        title="📦 Farm registrado",
-        color=discord.Color.green()
+        title=f"📊 Farm de {user['nome']}",
+        color=discord.Color.blue()
     )
 
-    for item, qtd in registro.items():
-        if qtd > 0:
-            embed.add_field(name=item.capitalize(), value=qtd)
+    embed.add_field(name="🔩 Aço", value=user["aço"])
+    embed.add_field(name="💻 Chip", value=user["chip"])
+    embed.add_field(name="🧵 Tecido", value=user["tecido"])
 
-    # 📩 Envia mensagem e apaga depois
-    await ctx.send(embed=embed, delete_after=20)
-
+    await ctx.send(embed=embed)
 
 # =========================
 # RANKING
