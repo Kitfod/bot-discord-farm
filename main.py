@@ -93,11 +93,15 @@ async def farm(ctx, *args):
 
 @bot.command()
 async def farm(ctx, *args):
-    # 🧹 Tenta apagar a mensagem do usuário
-    try:
-        await ctx.message.delete()
-    except:
-        pass
+
+    # 🧹 apagar mensagem (sem crash)
+    if ctx.guild:
+        perms = ctx.channel.permissions_for(ctx.guild.me)
+        if perms.manage_messages:
+            try:
+                await ctx.message.delete()
+            except:
+                pass
 
     dados = carregar()
     uid = str(ctx.author.id)
@@ -113,7 +117,7 @@ async def farm(ctx, *args):
     itens_validos = ["aço", "chip", "tecido"]
     registro = {"aço": 0, "chip": 0, "tecido": 0}
 
-    # ⚠️ validação básica
+    # validação
     if len(args) % 2 != 0:
         await ctx.send("❌ Use: !farm aço 2 chip 2 tecido 2", delete_after=10)
         return
@@ -134,7 +138,6 @@ async def farm(ctx, *args):
         registro[item] += quantidade
         dados[uid][item] += quantidade
 
-    # 💾 salva SEMPRE depois de tudo validado
     salvar(dados)
 
     embed = discord.Embed(
