@@ -210,6 +210,35 @@ async def resetar(ctx):
     )
 
     await ctx.send(embed=embed)
+
+@bot.command()
+async def resetaruser(ctx, membro: discord.Member):
+    # 🔒 Apenas líderes (opcional)
+    if not any(role.name == "Líder" for role in ctx.author.roles):
+        await ctx.send("❌ Apenas líderes podem usar este comando.")
+        return
+
+    dados = carregar()
+    uid = str(membro.id)
+
+    if uid not in dados:
+        await ctx.send("❌ Esse usuário não tem farm registrado.")
+        return
+
+    # Zera os valores
+    dados[uid]["aço"] = 0
+    dados[uid]["chip"] = 0
+    dados[uid]["tecido"] = 0
+
+    salvar(dados)
+
+    embed = discord.Embed(
+        title="🧹 Reset individual",
+        description=f"O farm de {membro.mention} foi zerado!",
+        color=discord.Color.orange()
+    )
+
+    await ctx.send(embed=embed)
     
 # =========================
 # INICIAR BOT
