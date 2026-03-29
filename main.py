@@ -198,11 +198,9 @@ async def resetar(ctx):
     except:
         pass
 
-   CARGO_LIDER_ID = 1486334762430759072  # coloque o ID do cargo aqui
+    CARGO_LIDER_ID = 1486334762430759072
 
-if CARGO_LIDER_ID not in [role.id for role in ctx.author.roles]:
-    await ctx.send("❌ Apenas líderes podem usar.", delete_after=10)
-    return
+    if CARGO_LIDER_ID not in [role.id for role in ctx.author.roles]:
         await ctx.send("❌ Apenas líderes podem usar.", delete_after=10)
         return
 
@@ -229,11 +227,9 @@ async def resetaruser(ctx, membro: discord.Member):
     except:
         pass
 
-  CARGO_LIDER_ID = 1486334762430759072  # coloque o ID do cargo aqui
+    CARGO_LIDER_ID = 1486334762430759072
 
-if CARGO_LIDER_ID not in [role.id for role in ctx.author.roles]:
-    await ctx.send("❌ Apenas líderes podem usar.", delete_after=10)
-    return
+    if CARGO_LIDER_ID not in [role.id for role in ctx.author.roles]:
         await ctx.send("❌ Apenas líderes podem usar.", delete_after=10)
         return
 
