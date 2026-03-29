@@ -68,20 +68,20 @@ async def farm(ctx, *args):
     registro = {"aço": 0, "chip": 0, "tecido": 0}
 
     if len(args) % 2 != 0:
-        await ctx.send("❌ Use: !farm aço 2 chip 2 tecido 2", delete_after=10)
+        await ctx.send("❌ Use: !farm aço 2 chip 2 tecido 2", delete_after=20)
         return
 
     for i in range(0, len(args), 2):
         item = args[i].lower()
 
         if item not in itens_validos:
-            await ctx.send(f"❌ Item inválido: {item}", delete_after=10)
+            await ctx.send(f"❌ Item inválido: {item}", delete_after=20)
             return
 
         try:
             quantidade = int(args[i + 1])
         except:
-            await ctx.send("❌ Quantidade inválida.", delete_after=10)
+            await ctx.send("❌ Quantidade inválida.", delete_after=20)
             return
 
         registro[item] += quantidade
@@ -123,7 +123,7 @@ async def ranking(ctx, item: str = None):
         if item:
             item = item.lower()
             if item not in ["aço", "chip", "tecido"]:
-                await ctx.send("❌ Use aço, chip ou tecido", delete_after=10)
+                await ctx.send("❌ Use aço, chip ou tecido", delete_after=20)
                 return
             total = user[item]
             ranking.append((user["nome"], total))
@@ -161,11 +161,21 @@ async def ranking(ctx, item: str = None):
 # =========================
 @bot.command()
 async def relatorio(ctx):
+
+    # apagar comando
+    if ctx.guild:
+        perms = ctx.channel.permissions_for(ctx.guild.me)
+        if perms.manage_messages:
+            try:
+                await ctx.message.delete()
+            except:
+                pass
+
     dados = carregar()
     canal = bot.get_channel(CANAL_LIDERES_ID)
 
     if canal is None:
-        await ctx.send("❌ Canal não encontrado.", delete_after=10)
+        await ctx.send("❌ Canal não encontrado.", delete_after=20)
         return
 
     embed = discord.Embed(
@@ -182,7 +192,7 @@ async def relatorio(ctx):
         )
 
     await canal.send(embed=embed)
-    await ctx.send("✅ Relatório enviado!", delete_after=10)
+    await ctx.send("✅ Relatório enviado!", delete_after=20)
 
 
 # =========================
@@ -190,8 +200,18 @@ async def relatorio(ctx):
 # =========================
 @bot.command()
 async def resetar(ctx):
+
+    # apagar comando
+    if ctx.guild:
+        perms = ctx.channel.permissions_for(ctx.guild.me)
+        if perms.manage_messages:
+            try:
+                await ctx.message.delete()
+            except:
+                pass
+
     if not any(role.name == "Líder" for role in ctx.author.roles):
-        await ctx.send("❌ Apenas líderes podem usar.", delete_after=10)
+        await ctx.send("❌ Apenas líderes podem usar.", delete_after=20)
         return
 
     dados = carregar()
@@ -203,7 +223,7 @@ async def resetar(ctx):
 
     salvar(dados)
 
-    await ctx.send("🧹 Todos os farms foram zerados!", delete_after=10)
+    await ctx.send("🧹 Todos os farms foram zerados!", delete_after=20)
 
 
 # =========================
@@ -211,15 +231,25 @@ async def resetar(ctx):
 # =========================
 @bot.command()
 async def resetaruser(ctx, membro: discord.Member):
+
+    # apagar comando
+    if ctx.guild:
+        perms = ctx.channel.permissions_for(ctx.guild.me)
+        if perms.manage_messages:
+            try:
+                await ctx.message.delete()
+            except:
+                pass
+
     if not any(role.name == "Líder" for role in ctx.author.roles):
-        await ctx.send("❌ Apenas líderes podem usar.", delete_after=10)
+        await ctx.send("❌ Apenas líderes podem usar.", delete_after=20)
         return
 
     dados = carregar()
     uid = str(membro.id)
 
     if uid not in dados:
-        await ctx.send("❌ Usuário sem registro.", delete_after=10)
+        await ctx.send("❌ Usuário sem registro.", delete_after=20)
         return
 
     dados[uid]["aço"] = 0
@@ -228,7 +258,7 @@ async def resetaruser(ctx, membro: discord.Member):
 
     salvar(dados)
 
-    await ctx.send(f"🧹 Farm de {membro.mention} zerado!", delete_after=10)
+    await ctx.send(f"🧹 Farm de {membro.mention} zerado!", delete_after=20)
 
 
 # =========================
