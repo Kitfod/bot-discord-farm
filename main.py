@@ -252,10 +252,14 @@ async def resetaruser(ctx, membro: discord.Member):
 # VENDAS
 # =========================
 
+import asyncio
+
 @bot.command(name="vendas", aliases=["venda"])
 async def vendas(ctx):
 
-    # 🧹 apaga o comando
+    # ⏳ espera antes de apagar (ESSENCIAL)
+    await asyncio.sleep(1)
+
     try:
         await ctx.message.delete()
     except:
@@ -309,7 +313,7 @@ async def vendas(ctx):
     embed.set_footer(text=f"Registrado em {agora}")
 
     await ctx.send(embed=embed)
-
+    
 # =========================
 # START
 # =========================
