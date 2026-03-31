@@ -252,67 +252,108 @@ async def resetaruser(ctx, membro: discord.Member):
 # VENDAS
 # =========================
 
-import asyncio
+import discord
+from discord.ext import commands
+from datetime import datetime
 
+intents = discord.Intents.default()
+intents.message_content = True
+
+bot = commands.Bot(command_prefix="!", intents=intents)
+
+CANAL_PERMITIDO = 1486188270860632205
+
+
+# =========================
+# VIEW (BOTÃO PERMANENTE)
+# =========================
+class VendaView(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=None)  # botão nunca expira
+
+    @discord.ui.button(label="📋 Registrar Venda", style=discord.ButtonStyle.green)
+    async def registrar(self, interaction: discord.Interaction, button: discord.ui.Button):
+
+        if interaction.channel.id != CANAL_PERMITIDO:
+            await interaction.response.send_message(
+                "❌ Use no canal correto.", ephemeral=True
+            )
+            return
+
+        def check(m):
+            return m.author == interaction.user and m.channel == interaction.channel
+
+        await interaction.response.send_message("Qual foi a venda?", ephemeral=True)
+
+        try:
+            resposta1 = await bot.wait_for("message", check=check, timeout=60)
+
+            await interaction.followup.send("Qual valor?", ephemeral=True)
+            resposta2 = await bot.wait_for("message", check=check, timeout=60)
+
+            await interaction.followup.send("Quem foi o comprador?", ephemeral=True)
+            resposta3 = await bot.wait_for("message", check=check, timeout=60)
+
+        except:
+            await interaction.followup.send("⏰ Tempo esgotado.", ephemeral=True)
+            return
+
+        # Data
+        agora = datetime.now().strftime("%d/%m/%Y %H:%M")
+
+        embed = discord.Embed(
+            title="📋 Registro de Venda",
+            color=discord.Color.green()
+        )
+
+        embed.add_field(name="🛒 Venda", value=resposta1.content, inline=False)
+        embed.add_field(name="💰 Valor", value=resposta2.content, inline=False)
+        embed.add_field(name="👤 Comprador", value=resposta3.content, inline=False)
+        embed.set_footer(text=f"Registrado em {agora}")
+
+        await interaction.channel.send(embed=embed)
+
+        # apagar respostas
+        try:
+            await resposta1.delete()
+            await resposta2.delete()
+            await resposta3.delete()
+        except:
+            pass
+
+
+# =========================
+# BOT ONLINE (IMPORTANTE)
+# =========================
+@bot.event
+async def on_ready():
+    bot.add_view(VendaView())  # 🔥 botão permanente
+    print(f"✅ Bot online como {bot.user}")
+
+
+# =========================
+# COMANDO PARA ENVIAR O BOTÃO
+# =========================
 @bot.command(name="vendas", aliases=["venda"])
 async def vendas(ctx):
 
-    # ⏳ espera antes de apagar (ESSENCIAL)
-    await asyncio.sleep(1)
-
+    # apagar comando
     try:
         await ctx.message.delete()
     except:
         pass
 
-    # 🔒 canal permitido
     if ctx.channel.id != CANAL_PERMITIDO:
-        await ctx.send("❌ Esse comando só pode ser usado no canal correto.", delete_after=10)
+        await ctx.send("❌ Use no canal correto.", delete_after=10)
         return
-
-    def check(m):
-        return m.author == ctx.author and m.channel == ctx.channel
-
-    try:
-        # Pergunta 1
-        pergunta1 = await ctx.send("Qual foi a venda?")
-        resposta1 = await bot.wait_for('message', check=check, timeout=60)
-
-        await pergunta1.delete()
-        await resposta1.delete()
-
-        # Pergunta 2
-        pergunta2 = await ctx.send("Qual valor?")
-        resposta2 = await bot.wait_for('message', check=check, timeout=60)
-
-        await pergunta2.delete()
-        await resposta2.delete()
-
-        # Pergunta 3
-        pergunta3 = await ctx.send("Quem foi o comprador?")
-        resposta3 = await bot.wait_for('message', check=check, timeout=60)
-
-        await pergunta3.delete()
-        await resposta3.delete()
-
-    except:
-        await ctx.send("⏰ Tempo esgotado. Tente novamente.", delete_after=10)
-        return
-
-    # Data e hora
-    agora = datetime.now().strftime("%d/%m/%Y %H:%M")
 
     embed = discord.Embed(
-        title="📋 Registro de Venda",
-        color=discord.Color.green()
+        title="📊 Sistema de Vendas",
+        description="Clique no botão abaixo para registrar uma venda.",
+        color=discord.Color.blue()
     )
 
-    embed.add_field(name="🛒 Venda", value=resposta1.content, inline=False)
-    embed.add_field(name="💰 Valor", value=resposta2.content, inline=False)
-    embed.add_field(name="👤 Comprador", value=resposta3.content, inline=False)
-    embed.set_footer(text=f"Registrado em {agora}")
-
-    await ctx.send(embed=embed)
+    await ctx.send(embed=embed, view=VendaView())
     
 # =========================
 # START
