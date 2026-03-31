@@ -252,31 +252,16 @@ async def resetaruser(ctx, membro: discord.Member):
 # VENDAS
 # =========================
 
-import discord
-from discord.ext import commands
-from datetime import datetime
+CANAL_PERMITIDO = 1486188270860632205  # canal onde pode usar o comando
 
-CANAL_PERMITIDO = 1486188270860632205  # COLOQUE O ID AQUI
+@bot.command(name="vendas", aliases=["venda"])
+async def vendas(ctx):
 
-@bot.command()
-async def venda(ctx):
+    # 🔒 trava o canal
     if ctx.channel.id != CANAL_PERMITIDO:
         await ctx.send("❌ Esse comando só pode ser usado no canal correto.")
         return
 
-intents = discord.Intents.default()
-intents.message_content = True
-
-bot = commands.Bot(command_prefix='!', intents=intents)
-
-
-@bot.event
-async def on_ready():
-    print(f'Bot online como {bot.user}')
-
-
-@bot.command()
-async def venda(ctx):
     def check(m):
         return m.author == ctx.author and m.channel == ctx.channel
 
@@ -301,10 +286,10 @@ async def venda(ctx):
     await pergunta3.delete()
     await resposta3.delete()
 
-    # Data e hora atual
+    # Data e hora
     agora = datetime.now().strftime("%d/%m/%Y %H:%M")
 
-    # Mensagem final
+    # Embed final
     embed = discord.Embed(
         title="📋 Registro de Venda",
         color=discord.Color.green()
@@ -316,7 +301,6 @@ async def venda(ctx):
     embed.set_footer(text=f"Registrado em {agora}")
 
     await ctx.send(embed=embed)
-
 
 # =========================
 # START
