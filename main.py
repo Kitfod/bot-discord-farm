@@ -255,13 +255,13 @@ async def resetaruser(ctx, membro: discord.Member):
 @bot.command(name="vendas", aliases=["venda"])
 async def vendas(ctx):
 
-    # 🧹 apaga o comando IGUAL às perguntas
+    # 🧹 apaga o comando
     try:
         await ctx.message.delete()
     except:
         pass
 
-    # 🔒 trava o canal
+    # 🔒 canal permitido
     if ctx.channel.id != CANAL_PERMITIDO:
         await ctx.send("❌ Esse comando só pode ser usado no canal correto.", delete_after=10)
         return
@@ -269,26 +269,31 @@ async def vendas(ctx):
     def check(m):
         return m.author == ctx.author and m.channel == ctx.channel
 
-    # Pergunta 1
-    pergunta1 = await ctx.send("Qual foi a venda?")
-    resposta1 = await bot.wait_for('message', check=check)
+    try:
+        # Pergunta 1
+        pergunta1 = await ctx.send("Qual foi a venda?")
+        resposta1 = await bot.wait_for('message', check=check, timeout=60)
 
-    await pergunta1.delete()
-    await resposta1.delete()
+        await pergunta1.delete()
+        await resposta1.delete()
 
-    # Pergunta 2
-    pergunta2 = await ctx.send("Qual valor?")
-    resposta2 = await bot.wait_for('message', check=check)
+        # Pergunta 2
+        pergunta2 = await ctx.send("Qual valor?")
+        resposta2 = await bot.wait_for('message', check=check, timeout=60)
 
-    await pergunta2.delete()
-    await resposta2.delete()
+        await pergunta2.delete()
+        await resposta2.delete()
 
-    # Pergunta 3
-    pergunta3 = await ctx.send("Quem foi o comprador?")
-    resposta3 = await bot.wait_for('message', check=check)
+        # Pergunta 3
+        pergunta3 = await ctx.send("Quem foi o comprador?")
+        resposta3 = await bot.wait_for('message', check=check, timeout=60)
 
-    await pergunta3.delete()
-    await resposta3.delete()
+        await pergunta3.delete()
+        await resposta3.delete()
+
+    except:
+        await ctx.send("⏰ Tempo esgotado. Tente novamente.", delete_after=10)
+        return
 
     # Data e hora
     agora = datetime.now().strftime("%d/%m/%Y %H:%M")
