@@ -256,6 +256,12 @@ CANAL_PERMITIDO = 1486188270860632205  # canal onde pode usar o comando
 
 @bot.command(name="vendas", aliases=["venda"])
 async def vendas(ctx):
+    
+     # ⏳ apaga o comando após 10 segundos
+    try:
+        await ctx.message.delete(delay=10)
+    except:
+        pass
 
     # 🔒 trava o canal
     if ctx.channel.id != CANAL_PERMITIDO:
