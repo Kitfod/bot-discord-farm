@@ -248,6 +248,79 @@ async def resetaruser(ctx, membro: discord.Member):
 
     await ctx.send(f"🧹 {membro.mention} foi resetado!", delete_after=10)
 
+# =========================
+# VENDAS
+# =========================
+
+import discord
+from discord.ext import commands
+from datetime import datetime
+
+CANAL_PERMITIDO = 1486188270860632205  # COLOQUE O ID AQUI
+
+@bot.command()
+async def venda(ctx):
+    if ctx.channel.id != CANAL_PERMITIDO:
+        await ctx.send("❌ Esse comando só pode ser usado no canal correto.")
+        return
+
+intents = discord.Intents.default()
+intents.message_content = True
+
+bot = commands.Bot(command_prefix='!', intents=intents)
+
+
+@bot.event
+async def on_ready():
+    print(f'Bot online como {bot.user}')
+
+
+@bot.command()
+async def venda(ctx):
+    def check(m):
+        return m.author == ctx.author and m.channel == ctx.channel
+
+    # Pergunta 1
+    pergunta1 = await ctx.send("Qual foi a venda?")
+    resposta1 = await bot.wait_for('message', check=check)
+
+    await pergunta1.delete()
+    await resposta1.delete()
+
+    # Pergunta 2
+    pergunta2 = await ctx.send("Qual valor?")
+    resposta2 = await bot.wait_for('message', check=check)
+
+    await pergunta2.delete()
+    await resposta2.delete()
+
+    # Pergunta 3
+    pergunta3 = await ctx.send("Quem foi o comprador?")
+    resposta3 = await bot.wait_for('message', check=check)
+
+    await pergunta3.delete()
+    await resposta3.delete()
+
+    # Data e hora atual
+    agora = datetime.now().strftime("%d/%m/%Y %H:%M")
+
+    # Mensagem final
+    embed = discord.Embed(
+        title="📋 Registro de Venda",
+        color=discord.Color.green()
+    )
+
+    embed.add_field(name="🛒 Venda", value=resposta1.content, inline=False)
+    embed.add_field(name="💰 Valor", value=resposta2.content, inline=False)
+    embed.add_field(name="👤 Comprador", value=resposta3.content, inline=False)
+    embed.set_footer(text=f"Registrado em {agora}")
+
+    await ctx.send(embed=embed)
+
+
+# COLOQUE SEU TOKEN AQUI
+bot.run("SEU_TOKEN_AQUI")
+
 
 # =========================
 # START
