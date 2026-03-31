@@ -318,10 +318,6 @@ async def venda(ctx):
     await ctx.send(embed=embed)
 
 
-# COLOQUE SEU TOKEN AQUI
-bot.run("SEU_TOKEN_AQUI")
-
-
 # =========================
 # START
 # =========================
