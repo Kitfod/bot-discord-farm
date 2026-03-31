@@ -252,20 +252,18 @@ async def resetaruser(ctx, membro: discord.Member):
 # VENDAS
 # =========================
 
-CANAL_PERMITIDO = 1486188270860632205  # canal onde pode usar o comando
-
 @bot.command(name="vendas", aliases=["venda"])
 async def vendas(ctx):
-    
-     # ⏳ apaga o comando após 10 segundos
+
+    # 🧹 apaga o comando IGUAL às perguntas
     try:
-        await ctx.message.delete(delay=10)
+        await ctx.message.delete()
     except:
         pass
 
     # 🔒 trava o canal
     if ctx.channel.id != CANAL_PERMITIDO:
-        await ctx.send("❌ Esse comando só pode ser usado no canal correto.")
+        await ctx.send("❌ Esse comando só pode ser usado no canal correto.", delete_after=10)
         return
 
     def check(m):
@@ -295,7 +293,6 @@ async def vendas(ctx):
     # Data e hora
     agora = datetime.now().strftime("%d/%m/%Y %H:%M")
 
-    # Embed final
     embed = discord.Embed(
         title="📋 Registro de Venda",
         color=discord.Color.green()
